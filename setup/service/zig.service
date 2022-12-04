@@ -1,0 +1,11 @@
+[Unit]
+Description=Security System - Zigbee
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/zigbee2mqtt/scripts
+ExecStart=npm start
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

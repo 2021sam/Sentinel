@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<style type="text/css">
+		@page { size: 8.5in 11in; margin: 0.79in }
+		p { line-height: 115%; margin-bottom: 0.1in; background: transparent }
+		pre { font-family: "Liberation Mono", monospace; font-size: 10pt; background: transparent }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre>
+import os, sys, time, ftplib
+import smtplib
+import urllib.request               #   ip request
+from ftplib import FTP, error_perm
+ftp_user='keith@cabear.com'
+ftp_password='time!'
+ftp_host='ftp.cabear.com'
+
+# home 		= '/home/pi/motion'
+home = 'c:\z'
+
+if not os.path.exists(home):
+    os.makedirs(home)
+os.chdir(home)
+
+
+def ftp( location ):
+	try:
+		start = time.time()
+		f = FTP(ftp_host)
+		login_code = f.login(user=ftp_user, passwd=ftp_password)
+		# f.cwd( '/bayrvs/' + location + '/snapshots')
+		f.cwd( '/bayrvs/' + location )
+		# print( 'remote --&gt; ', f.pwd() )
+		# print( f.dir() )
+		# print(login_code)
+		login_code = login_code.split()
+		# print(login_code)
+		login_code = login_code[0]
+		# print (login_code)
+		# last_snap = upload(f, home)			#	12.11.2020
+		upload(f, home)			#	12.11.2020
+		f.quit()
+
+	except Exception as e:
+		print('Exception ', e)
+
+
+
+def upload(f, path):
+	os.chdir(path)
+
+	for entry in os.scandir(path):
+		if entry.name.startswith('.'):
+			continue
+
+		if entry.is_dir():
+            # print('dir --&gt; ', entry.name)
+			if not entry.name in f.nlst():
+                # print('in --&gt; ', entry.name)
+				f.mkd(entry.name)
+
+			f.cwd(entry.name)
+            # print('ftp ', f.pwd() )
+			upload(f, path + '/' + entry.name)
+			f.cwd('../')
+			os.chdir('../')
+		else:
+            #            print('file --&gt; ', entry.name)
+			try:
+			    #print ('entry.name ', entry.name)
+				if entry.name in f.nlst():					#	If name already exists, delete.
+				    # print('in --&gt; ', entry.name)
+					f.delete(entry.name)
+
+				f.storbinary('STOR ' + entry.name, open(entry.name, 'rb'))
+				# print( 'FTP upload --&gt; ', entry.name )
+				# print('removing: ' + entry.name)
+				# os.remove(entry.name)
+				# print('removed: ' + entry.name)
+				# return entry.name				#	12/11/2020
+
+			except ftplib.error_perm as e:  # Handle only 550 (not found / no permission error)
+				error_code = str(e).split(None, 1)
+				print('error code = ', error_code)
+				if error_code[0] == '550':
+					print(error_code[1], 'File may not exist or you may not have permission.')
+				print('Error not explicitly handled ', error_code[0])
+
+			except Exception as e:
+				error_code = str(e).split(None, 1)
+				print('Exception Error ', error_code)
+
+
+ftp('mancave')</pre>
+</body>
+</html>

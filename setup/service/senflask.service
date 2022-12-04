@@ -1,0 +1,12 @@
+[Unit]
+Description=Sentinel Security Flask
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/Desktop/sentinel/
+ExecStart=flask run --host=0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

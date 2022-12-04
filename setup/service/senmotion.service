@@ -1,0 +1,9 @@
+[Unit]
+Wants=multi-user.target
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/motion -c /home/pi/.motion/motion.conf
+
+[Install]
+WantedBy=multi-user.target

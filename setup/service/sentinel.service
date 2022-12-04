@@ -1,0 +1,11 @@
+[Unit]
+Description=Security System
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/Desktop/sentinel
+ExecStart=sudo python3 server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

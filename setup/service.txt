@@ -1,0 +1,4 @@
+https://www.youtube.com/watch?v=fYQBvjYQ63U
+https://blog.miguelgrinberg.com/post/running-a-flask-application-as-a-service-with-systemd
+
+sudo systemctl daemon-reload
